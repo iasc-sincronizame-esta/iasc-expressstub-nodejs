@@ -1,10 +1,11 @@
 var bodyParser = require('body-parser');
-
+var morgan = require("morgan");
 var Consulta = require("./consulta");
 
 module.exports = function(app) {
 
   app.use(bodyParser.json());
+  app.use(morgan({ format: "dev" }));
 
   var consultas = [];
 
