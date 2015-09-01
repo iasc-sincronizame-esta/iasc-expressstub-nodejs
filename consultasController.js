@@ -1,13 +1,18 @@
-var Consulta = require("./consulta")
+var bodyParser = require('body-parser');
+var morgan = require("morgan");
+var Consulta = require("./consulta");
 
 module.exports = function(app) {
 
-  var consultas = []
+  app.use(bodyParser.json());
+  app.use(morgan({ format: "dev" }));
+
+  var consultas = [];
 
   // POST /consultas { remitente: 'Nahue', mensaje: 'asd' }
   app.post('/consultas', function(req, res) {
     consultas.push(new Consulta(req.body));
-    res.send(200);
+    res.sendStatus(200);
   });
 
   // GET /consultas
@@ -23,7 +28,7 @@ module.exports = function(app) {
     respuesta = _.find(consultas, { id: idRespuesta });
 
     if (respuesta) res.json(respuesta);
-    else res.send(404);
+    else res.sendStatus(404);
   });
 
 }
