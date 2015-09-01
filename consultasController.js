@@ -1,8 +1,12 @@
-var Consulta = require("./consulta")
+var bodyParser = require('body-parser');
+
+var Consulta = require("./consulta");
 
 module.exports = function(app) {
 
-  var consultas = []
+  app.use(bodyParser.json());
+
+  var consultas = [];
 
   // POST /consultas { remitente: 'Nahue', mensaje: 'asd' }
   app.post('/consultas', function(req, res) {
