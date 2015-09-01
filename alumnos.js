@@ -13,12 +13,21 @@ var ayudantesApi = {
 	}
 };
 
-var body = {
-	remitente: 'Charly',
-	mensaje: '¿A qué hora es la clase?'
-};
+var remitentes = ["Aldana", "Rodri", "Ariel", "Charly", "Nahuel"];
+var mensajes = [
+	'¿A qué hora es la clase?',
+	'¿En qué aula es?',
+	'¿Había que hacer un TP para hoy?'
+]
+
 
 function sendConsulta() {
+
+	var body = {
+		remitente: _.sample(remitentes),
+		mensaje: _.sample(mensajes)
+	};
+
 	ayudantesApi.postConsulta(body, 
 		function(err, response){
 			if (err) { return console.log(error); }
