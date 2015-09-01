@@ -11,7 +11,7 @@ module.exports = function(app) {
   // POST /consultas { remitente: 'Nahue', mensaje: 'asd' }
   app.post('/consultas', function(req, res) {
     consultas.push(new Consulta(req.body));
-    res.send(200);
+    res.sendStatus(200);
   });
 
   // GET /consultas
@@ -27,7 +27,7 @@ module.exports = function(app) {
     respuesta = _.find(consultas, { id: idRespuesta });
 
     if (respuesta) res.json(respuesta);
-    else res.send(404);
+    else res.sendStatus(404);
   });
 
 }
