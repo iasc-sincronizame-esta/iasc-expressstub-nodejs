@@ -5,43 +5,27 @@
 //==http://expressjs.com/4x/api.html
 var request = require('request');
 var _ = require('lodash');
+var Consultas = require('./consultas');
 
 var docentes = [
   "tu vieja", "mapache", "rodri042docente", "jaimito", "lima_nueva", "laCajaDeCamello"
 ];
 
-function getToServer(){
-  request.get('http://192.168.3.67:3000/consultas', function (err, response) {
-  	if (err) {
-  		console.error(err);
-  		return;
-  	};
-
-  	//console.log("        GET: " + JSON.stringify(response));
-
-
-    var consultas = JSON.parse(response.body);
+function responderConsultaRandom(){
+  Consultas.all(function(consultas){
+    if(!consultas){ return; }
+    console.log("Enviando respuesta");
     var consulta = _.sample(consultas);
     var respuesta = {
       remitente: _.sample(docentes),
       mensaje: "Si si, dale para adelante con eso."
     };
-
-    var options = {
-      url:'http://192.168.3.67:3000/consultas/'+consulta.id+'/respuestas',
-      headers: { 'content-type': 'application/json'},
-      body: JSON.stringify(respuesta)
-    };
-
-    request.post(options,function (err, response) {
-    	if (err) {
-    		console.error(err);
-    		return;
-    	};
-
-      //console.log("        POST: " + JSON.stringify(response));
-    });
+    Consultas.responder(consulta, respuesta,
+      function(data){console.log("respuesta ok"),
+      function(err){ console.log(err)}});
+  }, function(err){
+    console.log(err);
   })
 };
 
-setInterval(getToServer, 1000);
+setInterval(responderConsultaRandom, 1000);
