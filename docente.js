@@ -6,6 +6,8 @@
 var request = require('request');
 var _ = require('lodash');
 var Consultas = require('./consultas');
+var hostIp = "http://192.168.3.67";
+var baseUrl = hostIp + ":3000";
 
 var docentes = [
   "tu vieja", "mapache", "rodri042docente", "jaimito", "lima_nueva", "laCajaDeCamello"

@@ -1,11 +1,7 @@
 var _ = require("lodash");
 var request = require('request');
-
-
-var remoteServer = "192.168.3.67";
-var localhost = "0.0.0.0";
-
-var baseUrl = "http://" + remoteServer + ":3000/";
+var baseUrl = "http://192.168.3.67:3000/";
+var io = require('socket.io-client')("http://192.168.3.67:3001");
 
 var ayudantesApi = {
 	postConsulta : function (consulta, cb) {
@@ -39,7 +35,20 @@ function sendConsulta() {
 		console.log("Consulta creada: " + JSON.stringify(body));
 	}
 
-	ayudantesApi.postConsulta(body, cb);
+	ayudantesApi.postConsulta(body, cb);	
 };
 
-setInterval(sendConsulta, 700)
+
+
+function sendPorSocket() {
+
+	io.emit("suscribir", {
+			remitente: _.sample(remitentes),
+			mensaje: _.sample(mensajes)
+		});
+};
+
+io.on("hola", function(res) { console.log("Respuesta: " + res) })
+
+
+setInterval(sendPorSocket, 700);
