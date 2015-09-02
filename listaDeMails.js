@@ -32,6 +32,7 @@ ListaDeMails.prototype.enviarATopico = function(topico, mensaje) {
         self.enviarMensaje(suscripcion, mensaje);
       }.bind(this));
 }
+
 ListaDeMails.prototype.enviarMensaje = function(suscripcion, mensaje) {
   suscripcion = _.find(this.suscripciones, suscripcion);
   if (!suscripcion) throw new Error("La suscripción no existe");
