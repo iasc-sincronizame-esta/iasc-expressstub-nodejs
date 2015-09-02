@@ -1,7 +1,7 @@
 var _ = require("lodash");
 var request = require('request');
-
 var baseUrl = "http://192.168.3.67:3000/";
+var io = require('socket.io-client')("http://192.168.3.67:3001");
 
 var ayudantesApi = {
 	postConsulta : function (consulta, cb) {
@@ -38,4 +38,17 @@ function sendConsulta() {
 	ayudantesApi.postConsulta(body, cb);	
 };
 
-setInterval(sendConsulta, 700)
+
+
+function sendPorSocket() {
+
+	io.emit("suscribir", {
+			remitente: _.sample(remitentes),
+			mensaje: _.sample(mensajes)
+		});
+};
+
+io.on("hola", function(res) { console.log("Respuesta: " + res) })
+
+
+setInterval(sendPorSocket, 700);
