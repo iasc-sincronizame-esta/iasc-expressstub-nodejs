@@ -22,7 +22,7 @@ ListaDeMails.prototype.suscribir = function(suscripcion) {
 }
 
 ListaDeMails.prototype.cancelarSuscripción = function(suscriptor) {
-  this.suscripciones.remove(this.suscripciones, { suscriptor: suscriptor });
+  _.remove(this.suscripciones, { suscriptor: suscriptor });
 }
 
 ListaDeMails.prototype.enviarATopico = function(topico, mensaje) {
