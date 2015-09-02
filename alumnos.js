@@ -1,7 +1,7 @@
 var _ = require("lodash");
 var request = require('request');
-
 var baseUrl = "http://192.168.3.67:3000/";
+var io = require('socket.io-client')("http://192.168.3.67:3001");
 
 var ayudantesApi = {
 	postConsulta : function (consulta, cb) {
@@ -13,7 +13,7 @@ var ayudantesApi = {
 	}
 };
 
-var remitentes = ["Aldana", "Rodri", "Ariel", "Charly", "Nahuel"];
+var remitentes = ["Aldana", "Rodri", "Ariel", "Charly", "Nahuel"]
 var mensajes = [
 	'¿A qué hora es la clase?',
 	'¿En qué aula es?',
@@ -28,12 +28,27 @@ function sendConsulta() {
 		mensaje: _.sample(mensajes)
 	};
 
-	ayudantesApi.postConsulta(body, 
-		function(err, response){
-			if (err) { return console.log(error); }
+	var cb = function(err, response) {
+		if (err) { return console.log(err); }
 
-			console.log("Consulta creada: " + JSON.stringify(body));
-		});	
+		console.log(response.statusCode);
+		console.log("Consulta creada: " + JSON.stringify(body));
+	}
+
+	ayudantesApi.postConsulta(body, cb);	
 };
 
-setInterval(sendConsulta, 1000)
+
+
+function sendPorSocket() {
+
+	io.emit("suscribir", {
+			remitente: _.sample(remitentes),
+			mensaje: _.sample(mensajes)
+		});
+};
+
+io.on("hola", function(res) { console.log("Respuesta: " + res) })
+
+
+setInterval(sendPorSocket, 700);
