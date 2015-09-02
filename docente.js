@@ -5,6 +5,8 @@
 //==http://expressjs.com/4x/api.html
 var request = require('request');
 var _ = require('lodash');
+var hostIp = "http://192.168.3.67";
+var baseUrl = hostIp + ":3000";
 
 var docentes = [
   "tu vieja", "mapache", "rodri042docente", "jaimito", "lima_nueva", "laCajaDeCamello"
@@ -28,7 +30,7 @@ function getToServer(){
     };
 
     var options = {
-      url:'http://192.168.3.67:3000/consultas/'+consulta.id+'/respuestas',
+      url: baseUrl+'/consultas/'+consulta.id+'/respuestas',
       headers: { 'content-type': 'application/json'},
       body: JSON.stringify(respuesta)
     };
@@ -44,4 +46,15 @@ function getToServer(){
   })
 };
 
-setInterval(getToServer, 1000);
+//setInterval(getToServer, 1000);
+
+
+var io = require('socket.io-client')(hostIp + ":3001");
+
+setInterval(function(){
+  io.emit("suscribir", {"tuVieja": "bool"});
+}, 1000)
+
+io.on("hola",function(response){
+  console.log("Rodri dice ",response);
+})
