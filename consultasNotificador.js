@@ -12,8 +12,11 @@ io.on('connection', function(socket) {
     });
   });
 
-  socket.on('respondiendo', function(idConsulta) {
-    listaDeMails.enviar
+  socket.on('respondiendo', function(evento) {
+    listaDeMails.enviarATopico("respondiendo", {
+      consulta: listaDeMails.obtener(evento.consultaId),
+      remitente: evento.remitente
+    });
   });
 
   socket.on('disconnect', function() {
