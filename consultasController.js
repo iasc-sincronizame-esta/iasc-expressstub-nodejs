@@ -1,12 +1,12 @@
-var Consulta = require("./consulta");
-var listaDeMails = require("./listaDeMails")
+var Consulta = require('./consulta');
+var listaDeMails = require('./listaDeMails')
 var bodyParser = require('body-parser');
 var morgan = require("morgan");
 
 module.exports = function(app) {
 
   app.use(bodyParser.json());
-  app.use(morgan({ format: "dev" }));
+  app.use(morgan("dev", {}));
 
   // POST /consultas { remitente: 'Nahue', mensaje: 'asd' }
   app.post('/consultas', function(req, res) {

@@ -1,9 +1,8 @@
-var _ = require("lodash");
+var _ = require('lodash');
 
 var ListaDeMails = function() {
   this.consultas = [];
-  this.subscripcionesConsultas = [];
-  this.subscripcionesArrancoAEscribir = [];
+  this.suscripciones = [];
 }
 
 ListaDeMails.prototype.obtener = function(id) {
@@ -16,6 +15,28 @@ ListaDeMails.prototype.obtenerTodas = function() {
 
 ListaDeMails.prototype.guardar = function(consulta) {
   this.consultas.push(consulta);
+}
+
+ListaDeMails.prototype.suscribir = function(suscripcion) {
+  return this.suscripciones.push(suscripcion);
+}
+
+ListaDeMails.prototype.cancelarSuscripción = function(suscriptor) {
+  this.suscripciones.remove(this.suscripciones, { suscriptor: suscriptor });
+}
+
+ListaDeMails.prototype.enviarATopico = function(topico, mensaje) {
+    _
+      .filter(this.suscripciones, { topico: topico })
+      .forEach(function(suscripcion) {
+        self.enviarMensaje(suscripcion, mensaje);
+      }.bind(this));
+}
+ListaDeMails.prototype.enviarMensaje = function(suscripcion, mensaje) {
+  suscripcion = _.find(this.suscripciones, suscripcion);
+  if (!suscripcion) throw new Error("La suscripción no existe");
+
+  suscripcion.enviar(mensaje);
 }
 
 module.exports = new ListaDeMails();
