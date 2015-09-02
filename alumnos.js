@@ -13,7 +13,7 @@ var ayudantesApi = {
 	}
 };
 
-var remitentes = ["Aldana", "Rodri", "Ariel", "Charly", "Nahuel"];
+var remitentes = ["Aldana", "Rodri", "Ariel", "Charly", "Nahuel"]
 var mensajes = [
 	'¿A qué hora es la clase?',
 	'¿En qué aula es?',
@@ -28,12 +28,14 @@ function sendConsulta() {
 		mensaje: _.sample(mensajes)
 	};
 
-	ayudantesApi.postConsulta(body, 
-		function(err, response){
-			if (err) { return console.log(error); }
+	var cb = function(err, response) {
+		if (err) { return console.log(err); }
 
-			console.log("Consulta creada: " + JSON.stringify(body));
-		});	
+		console.log(response.statusCode);
+		console.log("Consulta creada: " + JSON.stringify(body));
+	}
+
+	ayudantesApi.postConsulta(body, cb);	
 };
 
-setInterval(sendConsulta, 1000)
+setInterval(sendConsulta, 700)
