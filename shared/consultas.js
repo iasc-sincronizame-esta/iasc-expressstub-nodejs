@@ -47,7 +47,9 @@ Consultas.get = function(route){
 
 Consultas.sePuedeResponder = function(consulta){
   var url = 'consultas/' + consulta.id + '/sePuedeResponder';
-  return this.get(url).then(parseBody);
+  return this.get(url).then(parseBody).then(function(data){
+    return data.sePuede;
+  });
 }
 
 module.exports = Consultas;
