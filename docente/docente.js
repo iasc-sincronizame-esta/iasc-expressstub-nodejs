@@ -1,4 +1,4 @@
-var Consultas = require('../shared/consultas');
+var ConsultasApi = require('../shared/consultas');
 var request = require('request');
 var _ = require('lodash');
 var config = require("../shared/config")
@@ -9,25 +9,39 @@ var docentes = [
 ];
 
 function responderConsultaRandom(){
-  Consultas.all(function(consultas){
-    if(!consultas){ return; }
-    console.log("Enviando respuesta");
-    var consulta = _.sample(consultas);
-    var respuesta = {
-      remitente: _.sample(docentes),
-      mensaje: "Si si, dale para adelante con eso."
-    };
-    Consultas.responder(consulta, respuesta,
-      function(data){console.log("respuesta ok"),
-      function(err){ console.log(err)}});
+  var consulta;
+  ConsultasApi.all(function(consultas){
+    console.log(consultas);
+    if(_.isEmpty(consultas)){ 
+      return console.log("No hay consultas :(");
+     }
+    consulta = _.sample(consultas);
+    console.log("Escribiendo respuesta");
+    io.emit("respondiendo", consulta);
+    setTimeout(function() {
+      var respuesta = {
+        remitente: _.sample(docentes),
+        mensaje: "Si si, dale para adelante con eso."
+      };
+      ConsultasApi.responder(consulta, respuesta,
+        function(data){ console.log("Respuesta enviada:" + JSON.stringify(data.body)) },
+        function(err){ console.log("ERROR"); console.log(err) });
+    }, 2000);
   }, function(err){
     console.log(err);
   })
 };
 
+//Escucho
 io.on("consultas", function(consulta) { console.log("Nueva consulta: " + JSON.stringify(consulta)) })
 
-io.on("respuestas", function(consulta) { console.log("Respondieron una consulta: " + JSON.stringify(consulta)) })
+io.on("respuestas", function(respuesta) { console.log("Respondieron una consulta: " + JSON.stringify(respuesta)) })
+
+io.on("respondiendo", function(consulta) { console.log("Estan respondiendo: " + JSON.stringify(consulta)) })
+
+//Suscribo
+io.emit("suscribir", "respondiendo");
 
 
-setInterval(responderConsultaRandom, 2000);
+setTimeout(responderConsultaRandom, 2000);
+setTimeout(responderConsultaRandom, 4000);

@@ -8,13 +8,12 @@ function Consulta(data) {
 
 Consulta.prototype.responder = function(respuesta, onSuccess, onError) {
   primerRespuesta = _.first(this.respuestas);
-  var noEsDelMismo = respuesta.remitente != primerRespuesta.remitente;
 
-  if (primeraRespuesta && noEsDelMismo)
+  if (primerRespuesta && respuesta.remitente != primerRespuesta.remitente)
   	onError("Solo puede responder el que ya respondió");
   else {
-	this.respuestas.push(respuesta);
-	onSuccess(this);
+  	this.respuestas.push(respuesta);
+  	onSuccess(this);
   }
 };
 

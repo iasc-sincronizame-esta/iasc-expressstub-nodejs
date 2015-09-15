@@ -34,7 +34,7 @@ module.exports = function(app) {
       listaDeMails.enviarATopico("respuestas", consulta);
     }
 
-    consulta.responder(req.body, onSuccess, res.status(400).end);
+    consulta.responder(req.body, onSuccess, function(err){ res.status(400).json(err) });
   });
 
 }
