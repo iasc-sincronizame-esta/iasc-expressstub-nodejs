@@ -25,8 +25,8 @@ function responderConsultaRandom(){
         mensaje: "Si si, dale para adelante con eso."
       };
       ConsultasApi.responder(consulta, respuesta)
-      .then( function(res){ console.log("Respuesta enviada: " + JSON.stringify(res) ) })
-      .catch( function(err){ console.log("ERROR"); console.log(err) });
+      .then(function(res){ console.log("Respuesta enviada: " + JSON.stringify(res) ) })
+      .catch(function(err){ console.log("ERROR: " + err) });
     }, 2000);
   });
 };

@@ -2,16 +2,7 @@ var _ = require("lodash");
 var request = require('request');
 var config = require("../shared/config")
 var io = require('socket.io-client')(config.DIRECCION_NOTIFICACIONES);
-
-var ayudantesApi = {
-	postConsulta : function (consulta, cb) {
-		request.post({
-			headers: { 'content-type' : 'application/json' },
-			url: config.DIRECCION_API + '/consultas',
-			body: JSON.stringify(consulta)
-		}, cb);
-	}
-};
+var ConsultasApi = require('../shared/consultas');
 
 var remitentes = ["Aldana", "Rodri", "Ariel", "Charly", "Nahuel"];
 
@@ -32,19 +23,14 @@ var consultasFactory = {
 };
 
 function sendConsultaHttp() {
-	var body = consultasFactory.random()
+	var consulta = consultasFactory.random()
 
-	var cb = function(err, response) {
-		if (err) { return console.log(err); }
-
-		console.log(response.statusCode);
-		console.log("Consulta enviada: " + JSON.stringify(body));
-	}
-
-	ayudantesApi.postConsulta(body, cb);	
+	ConsultasApi.enviarConsulta(consulta)
+	.then(function(data){ console.log("Consulta enviada: " + JSON.stringify(consulta)) })
+	.catch(function(err){ console.log("ERROR: " + JSON.stringify(err)) });
 };
 
-
+// Escucho
 io.on("consultas", function(consulta) { console.log("Nueva consulta: " + JSON.stringify(consulta)) })
 
 io.on("respuestas", function(consulta) { console.log("Respondieron una consulta: " + JSON.stringify(consulta)) })
