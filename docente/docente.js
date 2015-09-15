@@ -10,27 +10,25 @@ var docentes = [
 
 function responderConsultaRandom(){
   var consulta, docente;
-  ConsultasApi.all(function(consultas){
-    console.log(consultas);
-    if(_.isEmpty(consultas)){ 
-      return console.log("No hay consultas :(");
-     }
-    consulta = _.sample(consultas);
+  ConsultasApi.all()
+  .then(function(consultas){
+    if(_.isEmpty(consultas)){
+      return console.log("No hay consultas");
+    }
     docente = _.sample(docentes),
-    console.log("Escribiendo respuesta");
+    consulta = _.sample(consultas);
+    console.log("Escribiendo respuesta para " + JSON.stringify(consulta));
     io.emit("respondiendo", { consultaId: consulta.id, remitente: docente });
     setTimeout(function() {
       var respuesta = {
         remitente: docente,
         mensaje: "Si si, dale para adelante con eso."
       };
-      ConsultasApi.responder(consulta, respuesta,
-        function(data){ console.log("Respuesta enviada:" + JSON.stringify(data.body)) },
-        function(err){ console.log("ERROR"); console.log(err) });
+      ConsultasApi.responder(consulta, respuesta)
+      .then( function(res){ console.log("Respuesta enviada: " + JSON.stringify(res) ) })
+      .catch( function(err){ console.log("ERROR"); console.log(err) });
     }, 2000);
-  }, function(err){
-    console.log(err);
-  })
+  });
 };
 
 //Escucho
