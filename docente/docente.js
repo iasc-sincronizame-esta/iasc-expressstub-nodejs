@@ -8,29 +8,35 @@ var docentes = [
   "tu vieja", "mapache", "rodri042docente", "jaimito", "lima_nueva", "laCajaDeCamello"
 ];
 
-function responderConsultaRandom(){
-  var consulta, docente;
-  ConsultasApi.all()
-  .then(function(consultas){
-    if(_.isEmpty(consultas)){
-      return console.log("No hay consultas");
+var nuevoDocente = function(nombre){
+  return {
+    nombre: nombre,
+    responderConsultaRandom: function(){
+      var consulta;
+      ConsultasApi.all()
+      .then(function(consultas){
+        if(_.isEmpty(consultas)){
+          return console.log("No hay consultas");
+        }
+        consulta = _.sample(consultas);
+        console.log("Escribiendo respuesta para " + JSON.stringify(consulta));
+        io.emit("respondiendo", { consultaId: consulta.id, remitente: nombre });
+        setTimeout(function() {
+          var respuesta = {
+            remitente: nombre,
+            mensaje: "Si si, dale para adelante con eso."
+          };
+          ConsultasApi.responder(consulta, respuesta)
+          .then( function(res){ console.log("Respuesta enviada: " + JSON.stringify(res) ) })
+          .catch( function(err){ console.log("ERROR"); console.log(err) });
+        }, 2000);
+      });
     }
-    docente = _.sample(docentes),
-    consulta = _.sample(consultas);
-    console.log("Escribiendo respuesta para " + JSON.stringify(consulta));
-    io.emit("respondiendo", { consultaId: consulta.id, remitente: docente });
-    setTimeout(function() {
-      var respuesta = {
-        remitente: docente,
-        mensaje: "Si si, dale para adelante con eso."
-      };
-      ConsultasApi.responder(consulta, respuesta)
-      .then( function(res){ console.log("Respuesta enviada: " + JSON.stringify(res) ) })
-      .catch( function(err){ console.log("ERROR"); console.log(err) });
-    }, 2000);
-  });
-};
+  };
+}
 
+var instanciaDocente = nuevoDocente(_.sample(docentes));
+console.log("Soy " + instanciaDocente.nombre);
 //Escucho
 io.on("consultas", function(consulta) { console.log("Nueva consulta: " + JSON.stringify(consulta)) })
 
@@ -42,5 +48,5 @@ io.on("respondiendo", function(consulta) { console.log("Estan respondiendo: " + 
 io.emit("suscribir", "respondiendo");
 
 
-setTimeout(responderConsultaRandom, 2000);
-setTimeout(responderConsultaRandom, 4000);
+setTimeout(instanciaDocente.responderConsultaRandom, 2000);
+setTimeout(instanciaDocente.responderConsultaRandom, 4000);
