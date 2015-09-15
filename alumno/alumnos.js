@@ -1,14 +1,13 @@
 var _ = require("lodash");
 var request = require('request');
 var config = require("../shared/config")
-var baseUrl = config.DIRECCION_API + "/";
 var io = require('socket.io-client')(config.DIRECCION_NOTIFICACIONES);
 
 var ayudantesApi = {
 	postConsulta : function (consulta, cb) {
 		request.post({
 			headers: { 'content-type' : 'application/json' },
-			url: baseUrl + 'consultas',
+			url: config.DIRECCION_API + '/consultas',
 			body: JSON.stringify(consulta)
 		}, cb);
 	}
