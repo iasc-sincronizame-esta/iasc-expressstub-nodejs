@@ -29,10 +29,12 @@ module.exports = function(app) {
     consulta = listaDeMails.obtener(idConsulta);
     if (!consulta) return res.sendStatus(404);
 
-    consulta.responder(req.body);
-    res.json(consulta);
+    onSuccess = function(consulta) {
+      res.json(consulta);
+      listaDeMails.enviarATopico("respuestas", consulta);
+    }
 
-    listaDeMails.enviarATopico("respuestas", consulta);
+    consulta.responder(req.body, onSuccess, res.status(400).end);
   });
 
 }

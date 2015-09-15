@@ -6,8 +6,16 @@ function Consulta(data) {
   _.assign(this, data);
 }
 
-Consulta.prototype.responder = function(respuesta) {
-  this.respuestas.push(respuesta);
+Consulta.prototype.responder = function(respuesta, onSuccess, onError) {
+  primerRespuesta = _.first(this.respuestas);
+  var noEsDelMismo = respuesta.remitente != primerRespuesta.remitente;
+
+  if (primeraRespuesta && noEsDelMismo)
+  	onError("Solo puede responder el que ya respondió");
+  else {
+	this.respuestas.push(respuesta);
+	onSuccess(this);
+  }
 };
 
 module.exports = Consulta;
