@@ -6,8 +6,10 @@ var ConsultasApi = require('../shared/consultas');
 
 var remitentes = ["Aldana", "Rodri", "Ariel", "Charly", "Nahuel"];
 
+var alumno = _.sample(remitentes)
+
 var consultasFactory = {
-	remitente : _.sample(remitentes),
+	remitente : alumno,
 	mensajes : [
 		'¿A qué hora es la clase?',
 		'¿En qué aula es?',
@@ -35,5 +37,9 @@ io.on("consultas", function(consulta) { console.log("Nueva consulta: " + JSON.st
 
 io.on("respuestas", function(consulta) { console.log("Respondieron una consulta: " + JSON.stringify(consulta)) })
 
+
+//Suscribo
+console.log("Soy " + alumno);
+io.emit("ehwachin", { nombre: alumno, tipo:"alumno" })
 
 setInterval(sendConsultaHttp, 2000);
