@@ -12,10 +12,10 @@ io.on('connection', function(socket) {
   console.log("Me llegó una conexión de ", socket.id);
 
   // Suscribe automáticamente al tópico "consultas"
-  listaDeMails.suscribir({
+  listaDeMails.suscribir(new Suscripcion({
     suscriptor: socket,
     topico: "consultas"
-  });
+  }));
 
   socket.on('suscribir', function(topico) {
     var suscripcion = new Suscripcion({
