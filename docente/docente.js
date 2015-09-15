@@ -9,18 +9,19 @@ var docentes = [
 ];
 
 function responderConsultaRandom(){
-  var consulta;
+  var consulta, docente;
   ConsultasApi.all(function(consultas){
     console.log(consultas);
     if(_.isEmpty(consultas)){ 
       return console.log("No hay consultas :(");
      }
     consulta = _.sample(consultas);
+    docente = _.sample(docentes),
     console.log("Escribiendo respuesta");
-    io.emit("respondiendo", consulta);
+    io.emit("respondiendo", { consultaId: consulta.id, remitente: docente });
     setTimeout(function() {
       var respuesta = {
-        remitente: _.sample(docentes),
+        remitente: docente,
         mensaje: "Si si, dale para adelante con eso."
       };
       ConsultasApi.responder(consulta, respuesta,
