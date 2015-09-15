@@ -8,6 +8,20 @@ module.exports = function(app) {
   app.use(bodyParser.json());
   app.use(morgan("dev", {}));
 
+  obtenerConsulta = function(req, res, next) {
+    idConsulta = req.params.id
+
+    consulta = listaDeMails.obtener(idConsulta);
+    if (!consulta) return res.sendStatus(404);
+
+    req.consulta = consulta;
+    next()
+  }
+
+  // -----
+  // Rutas
+  // -----
+
   // POST /consultas { remitente: 'Nahue', mensaje: 'asd' }
   app.post('/consultas', function(req, res) {
     var consulta = new Consulta(req.body)
@@ -19,22 +33,27 @@ module.exports = function(app) {
 
   // GET /consultas
   app.get('/consultas', function(req, res) {
-      res.json(listaDeMails.obtenerTodas());
+    res.json(listaDeMails.obtenerTodas());
+  });
+
+  // GET /consultas/id/sePuedeResponder { sePuede: true }
+  app.get('/consultas/:id/sePuedeResponder', obtenerConsulta, function(req, res) {
+    res.json({ sePuede: req.consulta.sePuedeResponder() });
   });
 
   // POST /consultas/id/respuestas { remitente: 'Nahue', mensaje: 'asd' }
-  app.post('/consultas/:id/respuestas', function(req, res) {
-    idConsulta = req.params.id
-
-    consulta = listaDeMails.obtener(idConsulta);
-    if (!consulta) return res.sendStatus(404);
-
-    onSuccess = function(consulta) {
-      res.json(consulta);
-      listaDeMails.enviarATopico("respuestas", consulta);
+  app.post('/consultas/:id/respuestas', obtenerConsulta, function(req, res) {
+    onSuccess = function(respuesta) {
+      res.json(respuesta);
+      listaDeMails.enviarATopico("respuestas", respuesta);
     }
 
-    consulta.responder(req.body, onSuccess, function(err){ res.status(400).json(err) });
+    onError = function(err) { res.status(400).json(err); }
+
+    req.consulta
+      .responder(req.body)
+      .then(onSuccess)
+      .catch(onError);
   });
 
 }
