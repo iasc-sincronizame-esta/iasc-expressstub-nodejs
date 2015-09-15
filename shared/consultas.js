@@ -1,4 +1,6 @@
 var request = require('request');
+var Promise = require('bluebird');
+Promise.promisifyAll(request);
 
 var Consultas = function(){
 }
@@ -6,30 +8,20 @@ var Consultas = function(){
 var config = require("./config")
 var remoteServer = config.DIRECCION_API
 
-Consultas.all = function(onSuccess, onError){
-  request.get( remoteServer + '/consultas', function(err, response){
-    if (err) {
-      onError(err);
-    }else{
-      onSuccess(JSON.parse(response.body));
-    };
-  })
+Consultas.all = function(){
+  return request.getAsync( remoteServer + '/consultas')
+  .then(function(data){ return JSON.parse(data[0].body) })
 }
 
-Consultas.responder = function(consulta, respuesta, onSuccess, onError){
+Consultas.responder = function(consulta, respuesta){
   var options = {
-    url: remoteServer + '/consultas/'+consulta.id+'/respuestas',
+    url: remoteServer + '/consultas/'+ consulta.id +'/respuestas',
     headers: { 'content-type': 'application/json'},
     body: JSON.stringify(respuesta)
   };
 
-  request.post(options, function(err, response){
-    if(err){
-      onError(err);
-    }else{
-      onSuccess(response);
-    }
-  });
+  return request.postAsync(options)
+  .then(function(data){ return JSON.parse(data[0].body) });
 }
 
 module.exports = Consultas;
