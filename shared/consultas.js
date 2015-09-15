@@ -11,7 +11,7 @@ var config = require("./config")
 var remoteServer = config.DIRECCION_API
 
 Consultas.all = function(){
-  return request.getAsync( remoteServer + '/consultas')
+  return this.get('consultas')
   .then(parseBody)
 }
 
@@ -34,6 +34,20 @@ Consultas.post = function(route, body) {
   };
 
   return request.postAsync(options);
+}
+
+Consultas.get = function(route){
+  var options = {
+    headers: { 'content-type' : 'application/json' },
+    url: remoteServer + '/' + route
+  };
+
+  return request.getAsync(options);
+}
+
+Consultas.sePuedeResponder = function(consulta){
+  var url = 'consultas/' + consulta.id + '/sePuedeResponder';
+  return this.get(url).then(parseBody);
 }
 
 module.exports = Consultas;
