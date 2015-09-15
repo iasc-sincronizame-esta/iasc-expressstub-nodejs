@@ -6,16 +6,19 @@ var io = require('socket.io')(server);
 /*
 tópicos disponibles:
   - consultas
+  - respuestas
   - respondiendo
 */
 io.on('connection', function(socket) {
   console.log("Me llegó una conexión de ", socket.id);
 
-  // Suscribe automáticamente al tópico "consultas"
-  listaDeMails.suscribir(new Suscripcion({
-    suscriptor: socket,
-    topico: "consultas"
-  }));
+  // Suscribe automáticamente a los tópicos de mensajes
+  ["consultas", "respuestas"].forEach(function(topico) {
+    listaDeMails.suscribir(new Suscripcion({
+      suscriptor: socket,
+      topico: topico
+    }));
+  });
 
   socket.on('suscribir', function(topico) {
     var suscripcion = new Suscripcion({
