@@ -5,7 +5,7 @@ function Suscripcion(data) {
 }
 
 Suscripcion.prototype.enviar = function(mensaje) {
-  this.suscriptor.emit(mensaje);
+  this.suscriptor.emit(this.topico, mensaje);
 };
 
 module.exports = Suscripcion;

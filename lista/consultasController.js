@@ -10,8 +10,10 @@ module.exports = function(app) {
 
   // POST /consultas { remitente: 'Nahue', mensaje: 'asd' }
   app.post('/consultas', function(req, res) {
-    listaDeMails.guardar(new Consulta(req.body));
+    var consulta = new Consulta(req.body)
+    listaDeMails.guardar(consulta);
     res.sendStatus(200);
+    listaDeMails.enviarATopico("consultas", consulta);
   });
 
   // GET /consultas

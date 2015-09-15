@@ -1,3 +1,4 @@
+var Suscripcion = require("./suscripcion")
 var listaDeMails = require('./listaDeMails')
 var server = require('http').createServer();
 var io = require('socket.io')(server);
@@ -5,11 +6,19 @@ var io = require('socket.io')(server);
 io.on('connection', function(socket) {
   console.log("Me llegó una conexión de ", socket.id);
 
+  // Suscribe automáticamente al tópico "consultas"
+  listaDeMails.suscribir({
+    suscriptor: socket,
+    topico: "consultas"
+  });
+
   socket.on('suscribir', function(topico) {
-    listaDeMails.suscribir({
+    var suscripcion = new Suscripcion({
       suscriptor: socket,
       topico: topico
     });
+
+    listaDeMails.suscribir(suscripcion);
   });
 
   socket.on('respondiendo', function(evento) {
