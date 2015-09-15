@@ -3,6 +3,11 @@ var listaDeMails = require('./listaDeMails')
 var server = require('http').createServer();
 var io = require('socket.io')(server);
 
+/*
+tópicos disponibles:
+  - consultas
+  - respondiendo
+*/
 io.on('connection', function(socket) {
   console.log("Me llegó una conexión de ", socket.id);
 

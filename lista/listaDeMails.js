@@ -29,15 +29,8 @@ ListaDeMails.prototype.enviarATopico = function(topico, mensaje) {
     _
       .filter(this.suscripciones, { topico: topico })
       .forEach(function(suscripcion) {
-        self.enviarMensaje(suscripcion, mensaje);
+        suscripcion.enviar(mensaje);
       }.bind(this));
-}
-
-ListaDeMails.prototype.enviarMensaje = function(suscripcion, mensaje) {
-  suscripcion = _.find(this.suscripciones, suscripcion);
-  if (!suscripcion) throw new Error("La suscripción no existe");
-
-  suscripcion.enviar(mensaje);
 }
 
 module.exports = new ListaDeMails();
