@@ -1,7 +1,8 @@
 var _ = require("lodash");
 var request = require('request');
-var baseUrl = "http://192.168.3.67:3000/";
-var io = require('socket.io-client')("http://192.168.3.67:3001");
+var config = require("../shared/config")
+var baseUrl = "http://" + config.DIRECCION_API + "/";
+var io = require('socket.io-client')(config.DIRECCION_NOTIFICACIONES);
 
 var ayudantesApi = {
 	postConsulta : function (consulta, cb) {
