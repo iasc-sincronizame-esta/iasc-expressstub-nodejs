@@ -13,6 +13,7 @@ module.exports = function(app) {
     var consulta = new Consulta(req.body)
     listaDeMails.guardar(consulta);
     res.sendStatus(200);
+    
     listaDeMails.enviarATopico("consultas", consulta);
   });
 
@@ -30,6 +31,8 @@ module.exports = function(app) {
 
     consulta.responder(req.body);
     res.json(consulta);
+
+    listaDeMails.enviarATopico("respuestas", req.body);
   });
 
 }
