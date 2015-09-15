@@ -1,6 +1,8 @@
 var Consultas = require('../shared/consultas');
 var request = require('request');
 var _ = require('lodash');
+var config = require("../shared/config")
+var io = require('socket.io-client')(config.DIRECCION_NOTIFICACIONES);
 
 var docentes = [
   "tu vieja", "mapache", "rodri042docente", "jaimito", "lima_nueva", "laCajaDeCamello"
@@ -23,4 +25,9 @@ function responderConsultaRandom(){
   })
 };
 
-setInterval(responderConsultaRandom, 1000);
+io.on("consultas", function(consulta) { console.log("Nueva consulta: " + JSON.stringify(consulta)) })
+
+io.on("respuestas", function(consulta) { console.log("Respondieron una consulta: " + JSON.stringify(consulta)) })
+
+
+setInterval(responderConsultaRandom, 2000);

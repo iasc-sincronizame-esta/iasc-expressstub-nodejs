@@ -47,7 +47,7 @@ function sendConsultaHttp() {
 
 io.on("consultas", function(consulta) { console.log("Nueva consulta: " + JSON.stringify(consulta)) })
 
-io.on("respuesta", function(consulta) { console.log("Respondieron una consulta: " + JSON.stringify(consulta)) })
+io.on("respuestas", function(consulta) { console.log("Respondieron una consulta: " + JSON.stringify(consulta)) })
 
 
-setInterval(sendConsultaHttp, 1000);
+setInterval(sendConsultaHttp, 2000);
