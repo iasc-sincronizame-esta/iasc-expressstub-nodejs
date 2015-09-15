@@ -3,11 +3,11 @@ var request = require('request');
 var Consultas = function(){
 }
 
-var remoteServer = "192.168.3.67";
-var localhost = "0.0.0.0";
+var config = require("./config")
+var remoteServer = config.DIRECCION_API
 
 Consultas.all = function(onSuccess, onError){
-  request.get('http://' + remoteServer + ':3000/consultas', function(err, response){
+  request.get( remoteServer + '/consultas', function(err, response){
     if (err) {
       onError(err);
     }else{
@@ -18,7 +18,7 @@ Consultas.all = function(onSuccess, onError){
 
 Consultas.responder = function(consulta, respuesta, onSuccess, onError){
   var options = {
-    url:'http://' + remoteServer + ':3000/consultas/'+consulta.id+'/respuestas',
+    url: remoteServer + '/consultas/'+consulta.id+'/respuestas',
     headers: { 'content-type': 'application/json'},
     body: JSON.stringify(respuesta)
   };
