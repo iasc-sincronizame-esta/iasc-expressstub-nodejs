@@ -25,12 +25,16 @@ ListaDeMails.prototype.cancelarSuscripcionesDe = function(nombre) {
   _.remove(this.suscripciones, { "suscriptor.nombre": nombre });
 }
 
-ListaDeMails.prototype.enviarATopico = function(topico, mensaje) {
-    _
-      .filter(this.suscripciones, { topico: topico })
-      .forEach(function(suscripcion) {
-        suscripcion.enviar(mensaje);
-      });
+ListaDeMails.prototype.enviarATopico = function(topico, mensaje, filtro) {
+  if (!filtro) filtro = function() { return true; };
+
+  _(this.suscripciones)
+    .filter({ topico: topico })
+    .filter(function(suscripcion) {
+      return filtro(suscripcion.suscriptor);
+    }).forEach(function(suscripcion) {
+      suscripcion.enviar(mensaje);
+    });
 }
 
 ListaDeMails.prototype.yaEstaRespondiendo = function(remitente) {

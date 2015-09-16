@@ -29,7 +29,9 @@ module.exports = function(app) {
     listaDeMails.guardar(consulta);
     res.sendStatus(200);
 
-    listaDeMails.enviarATopico("consultas", consulta);
+    listaDeMails.enviarATopico("consultas", consulta, function(suscriptor) {
+      return !listaDeMails.yaEstaRespondiendo(suscriptor.nombre); 
+    });
   });
 
   // GET /consultas
