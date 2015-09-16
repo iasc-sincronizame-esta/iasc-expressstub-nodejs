@@ -6,7 +6,7 @@ var morgan = require("morgan");
 module.exports = function(app) {
 
   app.use(bodyParser.json());
-  app.use(morgan("dev", {}));
+  //app.use(morgan("dev", {}));
 
   obtenerConsulta = function(req, res, next) {
     idConsulta = req.params.id
@@ -41,6 +41,7 @@ module.exports = function(app) {
   // GET /consultas/id/sePuedeResponder { sePuede: true }
   // 4ta iteración
   app.get('/consultas/:id/sePuedeResponder', obtenerConsulta, function(req, res) {
+    console.log("Están viendo si se puede responder " + req.consulta.id);
     res.json({ sePuede: req.consulta.sePuedeResponder() });
   });
 

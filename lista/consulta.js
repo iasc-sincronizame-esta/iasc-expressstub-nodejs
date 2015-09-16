@@ -10,16 +10,18 @@ function Consulta(data) {
 }
 
 Consulta.prototype.responder = function(respuesta) {
+  var self = this;
+
   return new Promise(function(resolve, reject) {
-    primerRespuesta = _.first(this.respuestas);
+    primerRespuesta = _.first(self.respuestas);
 
     //3era iteración
     if (primerRespuesta && respuesta.remitente != primerRespuesta.remitente)
       return reject("Solo puede responder el que ya respondió");
     
-    this.respuestas.push(respuesta);
-    this.seDejoDeResponder();
-    resolve(this);
+    self.respuestas.push(respuesta);
+    self.seDejoDeResponder();
+    resolve(self);
   });
 };
 
@@ -32,7 +34,7 @@ Consulta.prototype.seDejoDeResponder = function() {
 }
 
 Consulta.prototype.sePuedeResponder = function(remitente) {
-  return this.elQueEstaEscribiendo != null;
+  return this.elQueEstaEscribiendo == null;
 }
 
 module.exports = Consulta;
