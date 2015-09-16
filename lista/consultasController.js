@@ -24,6 +24,8 @@ module.exports = function(app) {
 
   // POST /consultas { remitente: 'Nahue', mensaje: 'asd' }
   app.post('/consultas', function(req, res) {
+    console.log(req.body.remitente + " hizo una consulta");
+
     var consulta = new Consulta(req.body)
     listaDeMails.guardar(consulta);
     res.sendStatus(200);
