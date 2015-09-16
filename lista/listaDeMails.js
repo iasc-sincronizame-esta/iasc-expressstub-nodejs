@@ -21,8 +21,8 @@ ListaDeMails.prototype.suscribir = function(suscripcion) {
   return this.suscripciones.push(suscripcion);
 }
 
-ListaDeMails.prototype.cancelarSuscripción = function(suscriptor) {
-  _.remove(this.suscripciones, { suscriptor: suscriptor });
+ListaDeMails.prototype.cancelarSuscripcionesDe = function(nombre) {
+  _.remove(this.suscripciones, { "suscriptor.nombre": nombre });
 }
 
 ListaDeMails.prototype.enviarATopico = function(topico, mensaje) {
@@ -30,7 +30,14 @@ ListaDeMails.prototype.enviarATopico = function(topico, mensaje) {
       .filter(this.suscripciones, { topico: topico })
       .forEach(function(suscripcion) {
         suscripcion.enviar(mensaje);
-      }.bind(this));
+      });
+}
+
+ListaDeMails.prototype.yaEstaRespondiendo = function(remitente) {
+  return this.consultas
+    .some(function(consulta) {
+      return consulta.elQueEstaEscribiendo == remitente;
+    });
 }
 
 module.exports = new ListaDeMails();

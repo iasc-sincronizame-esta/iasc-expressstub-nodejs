@@ -4,7 +4,7 @@ _ = require("lodash")
 function Consulta(data) {
   this.id = Math.floor(Math.random() * 1000000).toString();
   this.respuestas = [];
-  this._respondedor = null;
+  this.elQueEstaEscribiendo = null;
 
   _.assign(this, data);
 }
@@ -17,20 +17,21 @@ Consulta.prototype.responder = function(respuesta) {
       return reject("Solo puede responder el que ya respondió");
     
     this.respuestas.push(respuesta);
+    this.seDejoDeResponder();
     resolve(this);
   });
 };
 
 Consulta.prototype.seEstaRespondiendo = function(remitente) {
-  this._respondedor = remitente;
+  this.elQueEstaEscribiendo = remitente;
 }
 
 Consulta.prototype.seDejoDeResponder = function() {
-  this._respondedor = null;
+  this.elQueEstaEscribiendo = null;
 }
 
 Consulta.prototype.sePuedeResponder = function(remitente) {
-  return this._respondedor != null;
+  return this.elQueEstaEscribiendo != null;
 }
 
 module.exports = Consulta;

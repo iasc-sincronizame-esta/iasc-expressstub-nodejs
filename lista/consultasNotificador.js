@@ -2,6 +2,7 @@ var Suscripcion = require("./suscripcion")
 var listaDeMails = require('./listaDeMails')
 var server = require('http').createServer();
 var io = require('socket.io')(server);
+_ = require("lodash")
 
 /*
 tópicos disponibles:
@@ -12,33 +13,39 @@ tópicos disponibles:
 io.on('connection', function(socket) {
   console.log("Me llegó una conexión de ", socket.id);
 
-  // Suscribe automáticamente a los tópicos de mensajes
-  ["consultas", "respuestas"].forEach(function(topico) {
-    listaDeMails.suscribir(new Suscripcion({
-      suscriptor: socket,
-      topico: topico
-    }));
-  });
+  // Handshake (el suscriptor tiene: socket, nombre y tipo)
+  socket.on('ehwachin', function(suscriptor) {
+    _.assign(suscriptor, { socket: socket });
 
-  socket.on('suscribir', function(topico) {
-    var suscripcion = new Suscripcion({
-      suscriptor: socket,
-      topico: topico
+    topicsASuscribir = ["consultas", "respuestas"]
+    if (suscriptor.tipo == "docente")
+      topicsASuscribir.push("respondiendo");
+
+    // Suscribe a los tópicos correspondientes
+    topicsASuscribir.forEach(function(topico) {
+      listaDeMails.suscribir(new Suscripcion({
+        suscriptor: suscriptor,
+        topico: topico
+      }));
     });
 
-    listaDeMails.suscribir(suscripcion);
-  });
+    // Notificación de cuando un docente responde
+    socket.on('respondiendo', function(evento) {
+      console.log(evento.remitente + " está respondiendo la consulta " + evento.consultaId);
 
-  socket.on('respondiendo', function(evento) {
-    listaDeMails.enviarATopico("respondiendo", {
-      consulta: listaDeMails.obtener(evento.consultaId),
-      remitente: evento.remitente
+      if (listaDeMails.yaEstaRespondiendo(evento.remitente))
+        return console.log("... pero ya está respondiendo otra: lo ignoramos");
+
+      listaDeMails.enviarATopico("respondiendo", {
+        consulta: listaDeMails.obtener(evento.consultaId),
+        remitente: evento.remitente
+      });
     });
-  });
 
-  socket.on('disconnect', function() {
-    console.log("Se me fue ", socket.id);
-    listaDeMails.cancelarSuscripción(socket);
+    socket.on('disconnect', function() {
+      console.log("Se me fue ", suscriptor.nombre);
+      listaDeMails.cancelarSuscripcionesDe(suscriptor.nombre);
+    });
   });
 });
 

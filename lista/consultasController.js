@@ -48,7 +48,10 @@ module.exports = function(app) {
       listaDeMails.enviarATopico("respuestas", respuesta);
     }
 
-    onError = function(err) { res.status(400).json(err); }
+    onError = function(err) {
+      console.log(req.body.remitente + " trató de responder a " + req.consulta.id + " pero otro ya la respondió antes");
+      res.status(400).json(err);
+    }
 
     req.consulta
       .responder(req.body)
