@@ -24,7 +24,7 @@ module.exports = function(app) {
 
   // POST /consultas { remitente: 'Nahue', mensaje: 'asd' }
   app.post('/consultas', function(req, res) {
-    console.log(req.body.remitente + " hizo una consulta");
+    console.log(req.body.remitente, "hizo una consulta");
 
     var consulta = new Consulta(req.body)
     listaDeMails.guardar(consulta);
@@ -47,12 +47,13 @@ module.exports = function(app) {
   // POST /consultas/id/respuestas { remitente: 'Nahue', mensaje: 'asd' }
   app.post('/consultas/:id/respuestas', obtenerConsulta, function(req, res) {
     onSuccess = function(respuesta) {
+      console.log(req.body.remitente, "respondió a", req.consulta.id);
       res.json(respuesta);
       listaDeMails.enviarATopico("respuestas", respuesta);
     }
 
     onError = function(err) {
-      console.log(req.body.remitente + " trató de responder a " + req.consulta.id + " pero otro ya la respondió antes");
+      console.log(req.body.remitente, "trató de responder a", req.consulta.id, "pero otro ya la respondió antes");
       res.status(400).json(err);
     }
 
