@@ -13,6 +13,7 @@ Consulta.prototype.responder = function(respuesta) {
   return new Promise(function(resolve, reject) {
     primerRespuesta = _.first(this.respuestas);
 
+    //3era iteración
     if (primerRespuesta && respuesta.remitente != primerRespuesta.remitente)
       return reject("Solo puede responder el que ya respondió");
     

@@ -37,6 +37,7 @@ module.exports = function(app) {
   });
 
   // GET /consultas/id/sePuedeResponder { sePuede: true }
+  // 4ta iteración
   app.get('/consultas/:id/sePuedeResponder', obtenerConsulta, function(req, res) {
     res.json({ sePuede: req.consulta.sePuedeResponder() });
   });

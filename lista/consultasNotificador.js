@@ -11,11 +11,10 @@ tópicos disponibles:
   - respondiendo
 */
 io.on('connection', function(socket) {
-  console.log("Me llegó una conexión de ", socket.id);
-
   // Handshake (el suscriptor tiene: socket, nombre y tipo)
   socket.on('ehwachin', function(suscriptor) {
     _.assign(suscriptor, { socket: socket });
+    console.log("Llegó ", suscriptor.nombre + " y me dijo: EH AMIGO!");
 
     topicsASuscribir = ["consultas", "respuestas"]
     if (suscriptor.tipo == "docente")
@@ -31,11 +30,15 @@ io.on('connection', function(socket) {
 
     // Notificación de cuando un docente responde
     socket.on('respondiendo', function(evento) {
-      console.log(evento.remitente + " está respondiendo la consulta " + evento.consultaId);
+      var consulta = listaDeMails.obtener(evento.consultaId);
+      if (consulta.seEstaRespondiendo()) //5ta iteración
+        return console.log(evento.remitente + " quizo escribir en la consulta " + evento.consultaId + " pero no pudo (ya otro lo está haciendo)");
 
-      if (listaDeMails.yaEstaRespondiendo(evento.remitente))
-        return console.log("... pero ya está respondiendo otra: lo ignoramos");
+      if (listaDeMails.yaEstaRespondiendo(evento.remitente)) //6ta iteración
+        return console.log(evento.remitente + " quizo escribir en la consulta " + evento.consultaId + " pero no pudo (ya está respondiendo otra)");
 
+      console.log(evento.remitente + " está escribiendo en la consulta " + evento.consultaId);
+      consulta.seEstaRespondiendo(evento.remitente);
       listaDeMails.enviarATopico("respondiendo", {
         consulta: listaDeMails.obtener(evento.consultaId),
         remitente: evento.remitente
