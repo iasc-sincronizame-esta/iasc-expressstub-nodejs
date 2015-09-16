@@ -8,6 +8,27 @@ function Docente(nombre){
   this.nombre = nombre;
   this.consulta = null;
   this.respuestaTimeout = null;
+};
+
+Docente.prototype.responderConsultaRandom = function(){
+  var self = this;
+  ConsultasApi.all()
+  .then(function(consultas){
+    if(_.isEmpty(consultas)){
+      return console.log("No hay consultas");
+    }
+    self.consulta = _.sample(consultas);
+    self.respondeSiPodes(2000);
+  });
+}
+
+Docente.prototype.respondeSiPodes = function(timeout){
+  var self = this;
+  ConsultasApi.sePuedeResponder(self.consulta)
+  .then(function(sePuedeResponder){
+    console.log(sePuedeResponder);
+    if (!sePuedeResponder) { self.mandarRespuesta(timeout) }
+  })
 }
 
 Docente.prototype.mandarRespuesta = function(timeout){
@@ -24,28 +45,12 @@ Docente.prototype.mandarRespuesta = function(timeout){
     .then( function(res){ console.log("Respuesta enviada: " + JSON.stringify(res) ) })
     .catch( function(err){ console.log("ERROR: " + err) });
   }, timeout);
-}
-
-Docente.prototype.responderConsultaRandom = function(){
-  var self = this;
-  ConsultasApi.all()
-  .then(function(consultas){
-    if(_.isEmpty(consultas)){
-      return console.log("No hay consultas");
-    }
-    self.consulta = _.sample(consultas);
-    ConsultasApi.sePuedeResponder(self.consulta)
-    .then(function(sePuedeResponder){
-      console.log(sePuedeResponder);
-      if (!sePuedeResponder) { self.mandarRespuesta(2000) }
-    })
-  });
-}
+};
 
 Docente.prototype.cancelarRespuesta = function(consulta){
   clearTimeout(this.respuestaTimeout);
   io.emit("norespondomas");
-  this.mandarRespuesta(_.sample([2000, 5000, 7000]));
+  this.respondeSiPodes(_.sample([2000, 5000, 7000]));
 }
 
 Docente.prototype.estoyRespondiendoLaMisma = function(consulta){
