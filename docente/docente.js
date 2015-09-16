@@ -4,57 +4,52 @@ var _ = require('lodash');
 var config = require("../shared/config")
 var io = require('socket.io-client')(config.DIRECCION_NOTIFICACIONES);
 
-var docentes = [
-  "tu vieja", "mapache", "rodri042docente", "jaimito", "lima_nueva", "laCajaDeCamello"
-];
+function Docente(nombre){
+  this.nombre = nombre;
+  this.consulta = null;
+  this.respuestaTimeout = null;
+}
 
-var mandarRespuesta = function(consulta, nombre){
-  console.log("Escribiendo respuesta para " + JSON.stringify(consulta));
-  io.emit("respondiendo", { consultaId: consulta.id, remitente: nombre });
-  setTimeout(function() {
+Docente.prototype.mandarRespuesta = function(timeout){
+  var self = this;
+  var timeout = timeout || 2000;
+  console.log("Escribiendo respuesta para " + JSON.stringify(self.consulta));
+  io.emit("respondiendo", { consultaId: self.consulta.id, remitente: self.nombre });
+  self.respuestaTimeout = setTimeout(function() {
     var respuesta = {
-      remitente: nombre,
+      remitente: self.nombre,
       mensaje: "Si si, dale para adelante con eso."
     };
-    ConsultasApi.responder(consulta, respuesta)
+    ConsultasApi.responder(self.consulta, respuesta)
     .then( function(res){ console.log("Respuesta enviada: " + JSON.stringify(res) ) })
     .catch( function(err){ console.log("ERROR: " + err) });
-  }, 2000);
+  }, timeout);
 }
 
-var nuevoDocente = function(nombre){
-  return {
-    nombre: nombre,
-    responderConsultaRandom: function(){
-      var consulta;
-      ConsultasApi.all()
-      .then(function(consultas){
-        if(_.isEmpty(consultas)){
-          return console.log("No hay consultas");
-        }
-        consulta = _.sample(consultas);
-        ConsultasApi.sePuedeResponder(consulta)
-        .then(function(sePuedeResponder){
-          console.log(sePuedeResponder);
-          if (sePuedeResponder) { mandarRespuesta(consulta, nombre) }
-        })
-      });
+Docente.prototype.responderConsultaRandom = function(){
+  var self = this;
+  ConsultasApi.all()
+  .then(function(consultas){
+    if(_.isEmpty(consultas)){
+      return console.log("No hay consultas");
     }
-  };
+    self.consulta = _.sample(consultas);
+    ConsultasApi.sePuedeResponder(self.consulta)
+    .then(function(sePuedeResponder){
+      console.log(sePuedeResponder);
+      if (!sePuedeResponder) { self.mandarRespuesta(2000) }
+    })
+  });
 }
 
-var instanciaDocente = nuevoDocente(_.sample(docentes));
+Docente.prototype.cancelarRespuesta = function(consulta){
+  clearTimeout(this.respuestaTimeout);
+  io.emit("norespondomas");
+  this.mandarRespuesta(_.sample([2000, 5000, 7000]));
+}
 
-//Escucho
-io.on("consultas", function(consulta) { console.log("Nueva consulta: " + JSON.stringify(consulta)) })
+Docente.prototype.estoyRespondiendoLaMisma = function(consulta){
+  return consulta.id == this.consulta.id;
+}
 
-io.on("respuestas", function(respuesta) { console.log("Respondieron una consulta: " + JSON.stringify(respuesta)) })
-
-io.on("respondiendo", function(consulta) { console.log("Estan respondiendo: " + JSON.stringify(consulta)) })
-
-//Suscribo
-console.log("Soy " + instanciaDocente.nombre);
-io.emit("ehwachin", { nombre: instanciaDocente.nombre, tipo:"docente" })
-
-setTimeout(instanciaDocente.responderConsultaRandom, 2000);
-setTimeout(instanciaDocente.responderConsultaRandom, 4000);
+module.exports = Docente;
